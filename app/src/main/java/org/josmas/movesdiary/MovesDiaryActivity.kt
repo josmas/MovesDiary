@@ -6,30 +6,28 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.SystemClock
-import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.Toolbar
 import android.util.Log
-import android.view.View
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Button
 import android.widget.Toast
+import kotlinx.android.synthetic.main.activity_moves_diary.*
+import kotlinx.android.synthetic.main.content_moves_diary.*
 
 class MovesDiaryActivity : AppCompatActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_moves_diary)
-    val toolbar = findViewById(R.id.toolbar) as Toolbar
     setSupportActionBar(toolbar)
 
-    val fab = findViewById(R.id.fab) as FloatingActionButton
-    fab.setOnClickListener { view -> Snackbar.make(view, R.string.add_entry, Snackbar.LENGTH_SHORT).setAction("Action", null).show() }
+    fab.setOnClickListener {
+      view -> Snackbar.make(view, R.string.add_entry, Snackbar.LENGTH_SHORT)
+        .setAction("Action", null).show()
+    }
 
-    val authButton = findViewById(R.id.auth_button) as Button
-    authButton.setOnClickListener { doRequestAuthInApp() }
+    auth_button.setOnClickListener { doRequestAuthInApp() }
   }
 
   /**
@@ -69,7 +67,7 @@ class MovesDiaryActivity : AppCompatActivity() {
               "Authorisation Failed; please try again ", Toast.LENGTH_LONG).show()
       } else {
         Toast.makeText(this,
-            "Authorisation Failed! Please make sure you have Moves app installed ",
+            "Authorisation Failed! Please make sure you have the Moves app installed.",
             Toast.LENGTH_LONG).show()
       }
     }
