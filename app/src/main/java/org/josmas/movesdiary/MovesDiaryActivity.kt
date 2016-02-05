@@ -11,25 +11,27 @@ import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.util.Log
-import android.view.View
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Button
 import android.widget.Toast
+import org.jetbrains.anko.find
+import org.jetbrains.anko.onClick
 
 class MovesDiaryActivity : AppCompatActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_moves_diary)
-    val toolbar = findViewById(R.id.toolbar) as Toolbar
+    val toolbar = find<Toolbar>(R.id.toolbar)
     setSupportActionBar(toolbar)
 
-    val fab = findViewById(R.id.fab) as FloatingActionButton
-    fab.setOnClickListener { view -> Snackbar.make(view, R.string.add_entry, Snackbar.LENGTH_SHORT).setAction("Action", null).show() }
+    find<FloatingActionButton>(R.id.fab).setOnClickListener { view ->
+      Snackbar.make(view, R.string.add_entry, Snackbar.LENGTH_SHORT)
+        .setAction("Action", null).show()
+    }
 
-    val authButton = findViewById(R.id.auth_button) as Button
-    authButton.setOnClickListener { doRequestAuthInApp() }
+    find<Button>(R.id.auth_button).onClick { doRequestAuthInApp() }
   }
 
   /**
