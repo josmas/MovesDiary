@@ -25,11 +25,13 @@ For now, it:
         [] If it does not, store
         [] If it does, but it is valid for a while, store
         [] If we need a new one all the time (?), discard
-      [] exchange code for bearer token (which does expire)
-        [] setup retrofit to make the calls to the Moves API (https only)
+      [X] exchange code for bearer token (which does expire)
+        [X] setup retrofit to make the calls to the Moves API (https only)
+        [] add retrofit routes for other API endpoints (Places or Storyline)
       [] store bearer token
         [] devise some way of refreshing the token when needed
       [] Add a progress dialog while auth is taking place
+      [] Figure out the flow of Auth + token + what happens next
     [] Auto diary
       [] find location info from Moves
       [] find pictures on the internet based on location (and some other

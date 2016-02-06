@@ -1,8 +1,11 @@
 package org.josmas.movesdiary.rest
 
 import org.josmas.movesdiary.Credentials
+import org.josmas.movesdiary.TokenValidation
+import org.josmas.movesdiary.UserProfile
 import retrofit2.http.POST
 import retrofit2.Call
+import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface MovesAPIService {
@@ -21,4 +24,11 @@ interface MovesAPIService {
                      @Query("client_id")clientId: String,
                      @Query("client_secret")clientSecret: String,
                      @Query("redirect_uri")redirectUri: String): Call<Credentials>
+
+  @GET("/api/1.1/user/profile")
+  fun getUserProfile(@Query("access_token")accessToken: String): Call<UserProfile>
+
+  @GET("/oauth/v1/tokeninfo")
+  fun getTokenValidation(@Query("access_token")accessToken: String): Call<TokenValidation>
+
 }

@@ -2,6 +2,7 @@ package org.josmas.movesdiary
 
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.info
+import org.jetbrains.anko.error
 import org.josmas.movesdiary.rest.MovesAPIService
 import retrofit2.Call
 import retrofit2.Callback
@@ -9,8 +10,19 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
+//TODO (jos) the following data classes are for GSON - should they be internal or part of a Model?
+// Auth data class
 data class Credentials (val access_token: String, val token_type: String, val expires_in: Int,
-                        val refresh_token: String, val user_id: String)
+                        val refresh_token: String, val user_id: Long)
+// Profile data classes
+data class UserProfile (val userId: Long, val profile: Profile)
+data class Profile (val firstDate: String, val currentTimeZome: CurrentTimeZone, val localization: Localization,
+                    val caloriesAvailable: Boolean, val platform: String)
+data class CurrentTimeZone (val id: String, val offset: String)
+data class Localization (val language: String, val locale: String, val firstWeekDay: Int, val metric: Boolean)
+
+// Token validation data class
+data class TokenValidation (val access_token: String, val scope: String, val expires_in: Int, val user_id: Long)
 
 interface MovesAuth: AnkoLogger {
   companion object {
@@ -50,15 +62,18 @@ interface MovesAuth: AnkoLogger {
         CLIENT_SECRET, REDIRECT_URI)
     getTokenCall.enqueue(object: Callback<Credentials> {
       override fun onResponse(tokenCall: Call<Credentials>?, response: Response<Credentials>?) {
-        if (response != null){
+        if (response != null) {
           info(response.body())
           val body = response.body()
           val accessCode = body.access_token;
           info(accessCode)
           // TODO (jos) I need to store the credentials I get back, including the auth_token:code
+          // TODO (jos) the following two calls are here to test a happy path; will be removed
+          validateToken(accessCode)
+          requestProfile(accessCode)
         }
         //TODO (jos) else --> Feedback that something is wrong.
-        //TODO (jos) the Auth progress bar stops here?
+        // TODO (jos) the Auth progress bar stops here?
       }
 
       override fun onFailure(tokenCall: Call<Credentials>?, exception: Throwable?) {
@@ -69,4 +84,63 @@ interface MovesAuth: AnkoLogger {
       }
     })
   }
+
+  fun requestProfile(validAccessToken: String) {
+    val getProfileCall: Call<UserProfile> = authService.getUserProfile(validAccessToken)
+
+    getProfileCall.enqueue(object: Callback<UserProfile> {
+      override fun onResponse(tokenCall: Call<UserProfile>?, response: Response<UserProfile>?) {
+        if (response != null) {
+          info(response.body())
+          if (response.body() != null) {
+            info(response.body())
+          } else {
+            if (response.errorBody() != null) {
+              error("E: " + response.errorBody())
+              error("M: " + response.message())
+              error(response.code())
+            }
+          }
+        }
+        // TODO (jos) else --> Feedback that something is wrong.
+        // TODO (jos) the Auth progress bar stops here?
+      }
+
+      override fun onFailure(tokenCall: Call<UserProfile>?, exception: Throwable?) {
+        info(exception.toString())
+        info(exception.toString())
+        //TODO (jos) stop the Auth progress bar here too.
+      }
+    })
+  }
+
+  fun validateToken(validAccessToken: String) {
+    val getProfileCall: Call<TokenValidation> = authService.getTokenValidation(validAccessToken)
+
+    getProfileCall.enqueue(object: Callback<TokenValidation> {
+      override fun onResponse(tokenCall: Call<TokenValidation>?, response: Response<TokenValidation>?) {
+        if (response != null) {
+          if (response.body() != null) {
+            info(response.body())
+          } else { //TODO (jos) handle errors here
+            if (response.errorBody() != null) {
+              error("E: " + response.errorBody())
+              error("M: " + response.message())
+              error(response.code())
+            }
+          }
+        }
+        //TODO (jos) else --> Feedback that something is wrong?
+        //TODO (jos) the Auth progress bar stops here?
+      }
+
+      override fun onFailure(tokenCall: Call<TokenValidation>?, exception: Throwable?) {
+        info(exception.toString())
+        info(exception.toString())
+        //TODO (jos) stop the Auth progress bar here too.
+        throw UnsupportedOperationException(exception)
+      }
+    })
+  }
+
 }
