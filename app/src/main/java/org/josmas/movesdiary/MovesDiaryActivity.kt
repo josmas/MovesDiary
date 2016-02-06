@@ -14,6 +14,7 @@ import android.view.MenuItem
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_moves_diary.*
 import kotlinx.android.synthetic.main.content_moves_diary.*
+import org.jetbrains.anko.onClick
 
 class MovesDiaryActivity : AppCompatActivity() {
 
@@ -23,11 +24,11 @@ class MovesDiaryActivity : AppCompatActivity() {
     setSupportActionBar(toolbar)
 
     fab.setOnClickListener {
-      view -> Snackbar.make(view, R.string.add_entry, Snackbar.LENGTH_SHORT)
+      Snackbar.make(it, R.string.add_entry, Snackbar.LENGTH_SHORT)
         .setAction("Action", null).show()
     }
 
-    auth_button.setOnClickListener { doRequestAuthInApp() }
+    auth_button.onClick { doRequestAuthInApp() }
   }
 
   /**
@@ -43,7 +44,7 @@ class MovesDiaryActivity : AppCompatActivity() {
     try {
       startActivityForResult(intent, REQUEST_AUTHORIZE)
     } catch (e: ActivityNotFoundException) {
-      Toast.makeText(this, "Moves app not installed", Toast.LENGTH_SHORT).show()
+      Toast.makeText(this, "Moves app not installed.", Toast.LENGTH_SHORT).show()
     }
 
   }
