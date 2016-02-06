@@ -8,15 +8,20 @@ import android.os.Bundle
 import android.os.SystemClock
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_moves_diary.*
 import kotlinx.android.synthetic.main.content_moves_diary.*
-import org.jetbrains.anko.onClick
+import org.jetbrains.anko.*
 
-class MovesDiaryActivity : AppCompatActivity() {
+class MovesDiaryActivity : AppCompatActivity(), AnkoLogger {
+
+  companion object {
+    private val CLIENT_ID = "0Z5UOm7tpViK5Ls242Padd4d4xS1AQ1j"
+    private val REDIRECT_URI = "https://moves-api-demo.herokuapp.com/auth/moves/callback"
+    private val REQUEST_AUTHORIZE = 1
+  }
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -46,7 +51,6 @@ class MovesDiaryActivity : AppCompatActivity() {
     } catch (e: ActivityNotFoundException) {
       Toast.makeText(this, "Moves app not installed.", Toast.LENGTH_SHORT).show()
     }
-
   }
 
   /**
@@ -60,7 +64,7 @@ class MovesDiaryActivity : AppCompatActivity() {
         val resultUri = data.data
         //TODO (jos) I need to extract the 'code' out of the resultUri, which will later be
         // exchanged for an authorisation Token (used to authenticate every call to the API).
-        Log.d(TAG, resultUri.toString())
+        info(resultUri.toString())
         Toast.makeText(this,
             if (resultCode == Activity.RESULT_OK)
               "Authorisation granted."
@@ -78,7 +82,11 @@ class MovesDiaryActivity : AppCompatActivity() {
    * Helper method for building a valid Moves authorize uri.
    */
   private fun createAuthUri(scheme: String, authority: String, path: String): Uri.Builder {
-    return Uri.Builder().scheme(scheme).authority(authority).path(path).appendQueryParameter("client_id", CLIENT_ID).appendQueryParameter("redirect_uri", REDIRECT_URI).appendQueryParameter("scope", "location activity").appendQueryParameter("state", SystemClock.uptimeMillis().toString())
+    return Uri.Builder().scheme(scheme).authority(authority).path(path)
+        .appendQueryParameter("client_id", CLIENT_ID)
+        .appendQueryParameter("redirect_uri", REDIRECT_URI)
+        .appendQueryParameter("scope", "location activity")
+        .appendQueryParameter("state", SystemClock.uptimeMillis().toString())
   }
 
   override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -99,13 +107,5 @@ class MovesDiaryActivity : AppCompatActivity() {
     }
 
     return super.onOptionsItemSelected(item)
-  }
-
-  companion object {
-
-    private val TAG = "MovesDiaryActivity"
-    private val CLIENT_ID = "0Z5UOm7tpViK5Ls242Padd4d4xS1AQ1j"
-    private val REDIRECT_URI = "https://moves-api-demo.herokuapp.com/auth/moves/callback"
-    private val REQUEST_AUTHORIZE = 1
   }
 }
