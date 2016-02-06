@@ -20,6 +20,7 @@ For now, it:
         [X] setup Spek as a unit testing framework
         [X] create the Util methods in an Interface to be *mixed in* to the Auth
         activity
+      [] check for errors in the result Uri for the auth token (see TODOs)
       [] Make sure the code is always the same? if not, does it expire?
         [] If it does not, store
         [] If it does, but it is valid for a while, store
@@ -28,6 +29,7 @@ For now, it:
         [] setup retrofit to make the calls to the Moves API (https only)
       [] store bearer token
         [] devise some way of refreshing the token when needed
+      [] Add a progress dialog while auth is taking place
     [] Auto diary
       [] find location info from Moves
       [] find pictures on the internet based on location (and some other

@@ -10,10 +10,14 @@ interface MovesAuth {
    * https://moves-api-demo.herokuapp.com/auth/moves/callback?code=CLby10w70vqruAe7HIE63rRrhoapE66tzofpZAu9lUToW73d3nB40qW79DA9QwV5&state=186329833
    * https://moves-api-demo.herokuapp.com/auth/moves/callback?code=k1c4hXBsYw54P8Jz4wBNUq49f09Fvhzvm78z948E3cS_BBPN5PXq0dJ1q4OB3fNy&state=186342375
    * https://moves-api-demo.herokuapp.com/auth/moves/callback?code=24sG8zlMaC1syvvHXlhKqxd5BGN55pf4w8rPcB7cWQ0Z5u1mqnbqf9VdjjKjw7kT&state=186348430
-   * and returns the code (which will be eventually exchanged for a bearer token for the Moves API)
+   * and returns the code (which will be eventually exchanged for a bearer token for the Moves API).
+   *
+   * If the authorisation is denied or fails, the result will be in the form:
+   * <redirect_uri>?error=<errorcode>
    */
   fun decodeMovesCode(uriCode: String): String {
     //TODO (jos) add some more checks here. Can I check the length of the resulting code?
+    //TODO (jos) check for <?error> in the case of failed auth (see comments above).
     return uriCode.substringAfter("code=").substringBefore("&state")
   }
 }
