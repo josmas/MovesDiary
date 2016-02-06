@@ -16,9 +16,9 @@ For now, it:
 ## TODOs
 
     [] Moves Auth
-      [] decode result Uri to get the code
-        [] setup Spek as a unit testing framework
-        [] create the Util methods in an Interface to be *mixed in* to the Auth
+      [X] decode result Uri to get the code
+        [X] setup Spek as a unit testing framework
+        [X] create the Util methods in an Interface to be *mixed in* to the Auth
         activity
       [] Make sure the code is always the same? if not, does it expire?
         [] If it does not, store
