@@ -15,11 +15,9 @@ import kotlinx.android.synthetic.main.activity_moves_diary.*
 import kotlinx.android.synthetic.main.content_moves_diary.*
 import org.jetbrains.anko.*
 
-class MovesDiaryActivity : AppCompatActivity(), AnkoLogger {
+class MovesDiaryActivity : AppCompatActivity(), AnkoLogger, MovesAuth {
 
   companion object {
-    private val CLIENT_ID = "0Z5UOm7tpViK5Ls242Padd4d4xS1AQ1j"
-    private val REDIRECT_URI = "https://moves-api-demo.herokuapp.com/auth/moves/callback"
     private val REQUEST_AUTHORIZE = 1
   }
 
@@ -62,9 +60,8 @@ class MovesDiaryActivity : AppCompatActivity(), AnkoLogger {
     when (requestCode) {
       REQUEST_AUTHORIZE -> if (data != null) {
         val resultUri = data.data
-        //TODO (jos) I need to extract the 'code' out of the resultUri, which will later be
-        // exchanged for an authorisation Token (used to authenticate every call to the API).
-        info(resultUri.toString())
+        val code = this.decodeMovesCode(resultUri.toString())
+        this.requestToken(code);
         Toast.makeText(this,
             if (resultCode == Activity.RESULT_OK)
               "Authorisation granted."
@@ -83,8 +80,8 @@ class MovesDiaryActivity : AppCompatActivity(), AnkoLogger {
    */
   private fun createAuthUri(scheme: String, authority: String, path: String): Uri.Builder {
     return Uri.Builder().scheme(scheme).authority(authority).path(path)
-        .appendQueryParameter("client_id", CLIENT_ID)
-        .appendQueryParameter("redirect_uri", REDIRECT_URI)
+        .appendQueryParameter("client_id", MovesAuth.CLIENT_ID)
+        .appendQueryParameter("redirect_uri", MovesAuth.REDIRECT_URI)
         .appendQueryParameter("scope", "location activity")
         .appendQueryParameter("state", SystemClock.uptimeMillis().toString())
   }

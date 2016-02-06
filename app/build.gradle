@@ -34,6 +34,8 @@ dependencies {
     compile "org.jetbrains.anko:anko-sdk15:$anko_version"
     compile "org.jetbrains.anko:anko-support-v4:$anko_version"
     compile "org.jetbrains.anko:anko-appcompat-v7:$anko_version"
+    compile 'com.squareup.retrofit2:retrofit:2.0.0-beta4'
+    compile 'com.squareup.retrofit2:converter-gson:2.0.0-beta4'
 }
 buildscript {
     ext.kotlin_version = '1.0.0-rc-1036'
