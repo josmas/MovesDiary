@@ -1,5 +1,7 @@
 package org.josmas.movesdiary
 
+import io.realm.Realm
+import io.realm.RealmObject
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.info
 import org.jetbrains.anko.error
@@ -12,8 +14,17 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 //TODO (jos) the following data classes are for GSON - should they be internal or part of a Model?
 // Auth data class
-data class Credentials (val access_token: String, val token_type: String, val expires_in: Int,
-                        val refresh_token: String, val user_id: Long)
+// Credentials has to extend : RealmObject() so it cannot be a data class - bummer.
+//data class Credentials (val access_token: String, val token_type: String, val expires_in: Int,
+//                        val refresh_token: String, val user_id: Long)
+open class Credentials : RealmObject() {
+  open var access_token: String? = null
+  open var token_type: String? = null
+  open var expires_in: Int? = null
+  open var refresh_token: String? = null
+  open var user_id: Long? = null
+
+}
 // Profile data classes
 data class UserProfile (val userId: Long, val profile: Profile)
 data class Profile (val firstDate: String, val currentTimeZome: CurrentTimeZone, val localization: Localization,
@@ -65,12 +76,19 @@ interface MovesAuth: AnkoLogger {
         if (response != null) {
           info(response.body())
           val body = response.body()
-          val accessCode = body.access_token;
+          val accessCode = body.access_token as String;
           info(accessCode)
           // TODO (jos) I need to store the credentials I get back, including the auth_token:code
+          //TODO (jos) extract Realm code to a method.
+          val realm = Realm.getDefaultInstance();
+          realm.beginTransaction();
+          var person = realm.createObject(Credentials::class.java)
+          person = body;
+          realm.commitTransaction()
+
           // TODO (jos) the following two calls are here to test a happy path; will be removed
-          validateToken(accessCode)
-          requestProfile(accessCode)
+//          validateToken(accessCode)
+//          requestProfile(accessCode)
         }
         //TODO (jos) else --> Feedback that something is wrong.
         // TODO (jos) the Auth progress bar stops here?

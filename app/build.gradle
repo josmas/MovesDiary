@@ -36,22 +36,35 @@ dependencies {
     compile "org.jetbrains.anko:anko-appcompat-v7:$anko_version"
     compile 'com.squareup.retrofit2:retrofit:2.0.0-beta4'
     compile 'com.squareup.retrofit2:converter-gson:2.0.0-beta4'
+    compile 'com.squareup:javawriter:2.5.1'
+    compile "io.realm:realm-android-library:${realm_version}@aar"
+    compile "io.realm:realm-annotations:${realm_version}"
+    kapt "io.realm:realm-annotations:${realm_version}"
+    kapt "io.realm:realm-annotations-processor:${realm_version}"
 }
 buildscript {
     ext.kotlin_version = '1.0.0-rc-1036'
     ext.spek_version = '0.1.194'
     ext.anko_version = '0.8.2'
+    ext.realm_version = '0.88.0-SNAPSHOT'
     repositories {
         jcenter()
+        maven {
+            url 'http://oss.jfrog.org/artifactory/oss-snapshot-local'
+        }
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-android-extensions:$kotlin_version"
+        classpath "io.realm:realm-gradle-plugin:${realm_version}"
     }
 }
 repositories {
     mavenCentral()
     maven {
         url "http://repository.jetbrains.com/all"
+    }
+    maven {
+        url 'http://oss.jfrog.org/artifactory/oss-snapshot-local'
     }
 }
