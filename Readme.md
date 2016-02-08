@@ -27,18 +27,31 @@ For now, it:
         [] If we need a new one all the time (?), discard
       [X] exchange code for bearer token (which does expire)
         [X] setup retrofit to make the calls to the Moves API (https only)
-        [] add retrofit routes for other API endpoints (Places or Storyline)
-      [] store bearer token
-        [] devise some way of refreshing the token when needed
+      [] add retrofit routes for other API endpoints (Places or Storyline)
+        [] add routes
+        [] add data classes
+        [] do I need to store this data, or cache if for a while?
+      [] store stuff
+        [X] I tried doing this with Realm but it needs custom serialisers, so I am
+           going to use Anko + SQLite (see branch -realm-)
+        [X] Anko + SQLlite
+          [] figure out how migrations work
+          [X] store auth token -- Not needed
+          [X] store credentials (bearer token and refresh)
+          [] store API data from calls
       [] Add a progress dialog while auth is taking place
       [] Figure out the flow of Auth + token + what happens next
+        [] When App starts, only show Auth button if needed
+          [] Check DB for access_token
+          [] Validate access_token? Can I do this with the expires_in?
+      [] devise some way of refreshing the token when needed
     [] Auto diary
       [] find location info from Moves
       [] find pictures on the internet based on location (and some other
       filters?)
       [] Integrate Picasso or some other images library
       [] make it look good!
-    [] Setup CircleCI
+    [X] Setup CircleCI
 
 
 Jos - February 16

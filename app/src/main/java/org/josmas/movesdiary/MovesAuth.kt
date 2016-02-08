@@ -3,6 +3,7 @@ package org.josmas.movesdiary
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.info
 import org.jetbrains.anko.error
+import org.josmas.movesdiary.db.dbOperations
 import org.josmas.movesdiary.rest.MovesAPIService
 import retrofit2.Call
 import retrofit2.Callback
@@ -63,14 +64,15 @@ interface MovesAuth: AnkoLogger {
     getTokenCall.enqueue(object: Callback<Credentials> {
       override fun onResponse(tokenCall: Call<Credentials>?, response: Response<Credentials>?) {
         if (response != null) {
-          info(response.body())
-          val body = response.body()
+          val body: Credentials = response.body()
+          info("the credentials object: " +body)
           val accessCode = body.access_token;
           info(accessCode)
-          // TODO (jos) I need to store the credentials I get back, including the auth_token:code
+          val allGood = dbOperations.insertCredentials(body)
+          info("DB Operations good if not -1? : " + allGood)//TODO (jos) deal with errors
           // TODO (jos) the following two calls are here to test a happy path; will be removed
-          validateToken(accessCode)
-          requestProfile(accessCode)
+          //validateToken(accessCode)
+          //requestProfile(accessCode)
         }
         //TODO (jos) else --> Feedback that something is wrong.
         // TODO (jos) the Auth progress bar stops here?
