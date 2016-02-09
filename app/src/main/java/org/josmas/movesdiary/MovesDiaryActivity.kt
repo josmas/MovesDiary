@@ -15,7 +15,6 @@ import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_moves_diary.*
 import kotlinx.android.synthetic.main.content_moves_diary.*
 import org.jetbrains.anko.*
-import org.josmas.movesdiary.db.dbOperations
 
 class MovesDiaryActivity : AppCompatActivity(), AnkoLogger, MovesAuth, MovesData {
 
@@ -32,16 +31,15 @@ class MovesDiaryActivity : AppCompatActivity(), AnkoLogger, MovesAuth, MovesData
       Snackbar.make(it, R.string.add_entry, Snackbar.LENGTH_SHORT)
         .setAction("Action", null).show()
     }
+
+    profile_button.onClick { requestProfile(this) }
+
   }
 
   override fun onResume() {
     super.onResume()
-    if (dbOperations.getAccessToken().isEmpty()){
-      auth_button.onClick { doRequestAuthInApp() }
-    }
-    else {
-      auth_button.visibility = View.GONE
-      auth_button.text = "You are signed in"
+    if (getAccessToken().isEmpty()){
+      doRequestAuthInApp()
     }
   }
 

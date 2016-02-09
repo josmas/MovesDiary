@@ -1,8 +1,10 @@
 package org.josmas.movesdiary
 
+import android.content.Context
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.info
 import org.jetbrains.anko.error
+import org.jetbrains.anko.toast
 import org.josmas.movesdiary.db.dbOperations
 import org.josmas.movesdiary.rest.MovesAPIService
 import retrofit2.Call
@@ -33,9 +35,19 @@ interface MovesService : AnkoLogger {
         .addConverterFactory(GsonConverterFactory.create())
         .build();
     val movesService: MovesAPIService = retrofit.create(MovesAPIService::class.java)
+
+    var accessToken: String = ""
   }
 
   fun getService(): MovesAPIService { return movesService }
+
+  fun getAccessToken(): String {
+    if (accessToken.isEmpty()){ //Read from the DB
+      accessToken = dbOperations.getAccessToken()
+    }
+
+    return accessToken;
+  }
 }
 
 interface MovesAuth : MovesService, AnkoLogger {
@@ -124,24 +136,36 @@ interface MovesAuth : MovesService, AnkoLogger {
 }
 
 interface MovesData : MovesService, AnkoLogger {
-  fun requestProfile(validAccessToken: String) {
-    val getProfileCall: Call<UserProfile> = getService().getUserProfile(validAccessToken)
+  fun requestProfile(ctx: Context = App.instance) {
+
+    if (getAccessToken().isEmpty()) {
+      info("User is not Signed in; cannot request a Profile. Exiting this call.")
+      return
+    }
+
+    info("User seems to be signed in; don't know at this moment if access_token is valid.")
+    val getProfileCall: Call<UserProfile> = getService().getUserProfile(getAccessToken())
 
     getProfileCall.enqueue(object: Callback<UserProfile> {
       override fun onResponse(tokenCall: Call<UserProfile>?, response: Response<UserProfile>?) {
+        var err = false
         if (response != null) {
-          info(response.body())
           if (response.body() != null) {
             info(response.body())
+            //TODO (jos) store profile on DB - it won't change much
+            return
           } else {
             if (response.errorBody() != null) {
-              error("E: " + response.errorBody())
-              error("M: " + response.message())
-              error(response.code())
+              error(response.message() + " : " + response.code() + " : " + response.raw())
+              err = true
             }
           }
         }
-        // TODO (jos) else --> Feedback that something is wrong.
+        else {
+          error("No response back from Profile call.")
+          err = true
+        }
+        if (err) ctx.toast("There's been a communication error, please try again later.")
         // TODO (jos) the Auth progress bar stops here?
       }
 
