@@ -25,20 +25,26 @@ data class Localization (val language: String, val locale: String, val firstWeek
 // Token validation data class
 data class TokenValidation (val access_token: String, val scope: String, val expires_in: Int, val user_id: Long)
 
-interface MovesAuth: AnkoLogger {
+interface MovesService : AnkoLogger {
+  companion object {
+
+    val retrofit = Retrofit.Builder()
+        .baseUrl("https://api.moves-app.com")
+        .addConverterFactory(GsonConverterFactory.create())
+        .build();
+    val movesService: MovesAPIService = retrofit.create(MovesAPIService::class.java)
+  }
+
+  fun getService(): MovesAPIService { return movesService }
+}
+
+interface MovesAuth : MovesService, AnkoLogger {
   companion object {
     val CLIENT_ID = "0Z5UOm7tpViK5Ls242Padd4d4xS1AQ1j"
     val REDIRECT_URI = "https://api.moves-app.com/auth/moves/callback"
     val CLIENT_SECRET = "dRSw6mn05cnGBaUxOOOFEodeeJkctx1DpQ6d9G7FJ8ZL9hMd93gqWHW69Q3nNwH5"
 
     private val CODE_LENGTH = 64
-
-    val retrofit = Retrofit.Builder()
-        .baseUrl("https://api.moves-app.com")
-        .addConverterFactory(GsonConverterFactory.create())
-        .build();
-
-    val authService: MovesAPIService  = retrofit.create(MovesAPIService::class.java)
   }
 
   /**
@@ -59,7 +65,7 @@ interface MovesAuth: AnkoLogger {
 
   fun requestToken(code: String): Unit {
 
-    val getTokenCall: Call<Credentials> = authService.getAccessToken(code, CLIENT_ID,
+    val getTokenCall: Call<Credentials> = getService().getAccessToken(code, CLIENT_ID,
         CLIENT_SECRET, REDIRECT_URI)
     getTokenCall.enqueue(object: Callback<Credentials> {
       override fun onResponse(tokenCall: Call<Credentials>?, response: Response<Credentials>?) {
@@ -87,37 +93,8 @@ interface MovesAuth: AnkoLogger {
     })
   }
 
-  fun requestProfile(validAccessToken: String) {
-    val getProfileCall: Call<UserProfile> = authService.getUserProfile(validAccessToken)
-
-    getProfileCall.enqueue(object: Callback<UserProfile> {
-      override fun onResponse(tokenCall: Call<UserProfile>?, response: Response<UserProfile>?) {
-        if (response != null) {
-          info(response.body())
-          if (response.body() != null) {
-            info(response.body())
-          } else {
-            if (response.errorBody() != null) {
-              error("E: " + response.errorBody())
-              error("M: " + response.message())
-              error(response.code())
-            }
-          }
-        }
-        // TODO (jos) else --> Feedback that something is wrong.
-        // TODO (jos) the Auth progress bar stops here?
-      }
-
-      override fun onFailure(tokenCall: Call<UserProfile>?, exception: Throwable?) {
-        info(exception.toString())
-        info(exception.toString())
-        //TODO (jos) stop the Auth progress bar here too.
-      }
-    })
-  }
-
   fun validateToken(validAccessToken: String) {
-    val getProfileCall: Call<TokenValidation> = authService.getTokenValidation(validAccessToken)
+    val getProfileCall: Call<TokenValidation> = getService().getTokenValidation(validAccessToken)
 
     getProfileCall.enqueue(object: Callback<TokenValidation> {
       override fun onResponse(tokenCall: Call<TokenValidation>?, response: Response<TokenValidation>?) {
@@ -144,5 +121,35 @@ interface MovesAuth: AnkoLogger {
       }
     })
   }
+}
 
+interface MovesData : MovesService, AnkoLogger {
+  fun requestProfile(validAccessToken: String) {
+    val getProfileCall: Call<UserProfile> = getService().getUserProfile(validAccessToken)
+
+    getProfileCall.enqueue(object: Callback<UserProfile> {
+      override fun onResponse(tokenCall: Call<UserProfile>?, response: Response<UserProfile>?) {
+        if (response != null) {
+          info(response.body())
+          if (response.body() != null) {
+            info(response.body())
+          } else {
+            if (response.errorBody() != null) {
+              error("E: " + response.errorBody())
+              error("M: " + response.message())
+              error(response.code())
+            }
+          }
+        }
+        // TODO (jos) else --> Feedback that something is wrong.
+        // TODO (jos) the Auth progress bar stops here?
+      }
+
+      override fun onFailure(tokenCall: Call<UserProfile>?, exception: Throwable?) {
+        info(exception.toString())
+        info(exception.toString())
+        //TODO (jos) stop the Auth progress bar here too.
+      }
+    })
+  }
 }

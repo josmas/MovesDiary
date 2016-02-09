@@ -43,6 +43,9 @@ For now, it:
       [] Figure out the flow of Auth + token + what happens next
         [X] When App starts, only show Auth button if needed
           [X] Check DB for access_token
+          [] Get profile with a bad token and fix error handling
+            [] and think about how to handle when a token is expired
+            [] also store the profile, as it should not change.
           [] Validate access_token? Can I do this with the expires_in?
           [] Add sing out to Menu
       [] devise some way of refreshing the token when needed
@@ -52,6 +55,7 @@ For now, it:
       filters?)
       [] Integrate Picasso or some other images library
       [] make it look good!
+    [] Sign out funcitonality
     [X] Setup CircleCI
 
 

@@ -17,7 +17,7 @@ import kotlinx.android.synthetic.main.content_moves_diary.*
 import org.jetbrains.anko.*
 import org.josmas.movesdiary.db.dbOperations
 
-class MovesDiaryActivity : AppCompatActivity(), AnkoLogger, MovesAuth {
+class MovesDiaryActivity : AppCompatActivity(), AnkoLogger, MovesAuth, MovesData {
 
   companion object {
     private val REQUEST_AUTHORIZE = 1
