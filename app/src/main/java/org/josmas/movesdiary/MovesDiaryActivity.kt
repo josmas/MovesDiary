@@ -10,10 +10,12 @@ import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_moves_diary.*
 import kotlinx.android.synthetic.main.content_moves_diary.*
 import org.jetbrains.anko.*
+import org.josmas.movesdiary.db.dbOperations
 
 class MovesDiaryActivity : AppCompatActivity(), AnkoLogger, MovesAuth {
 
@@ -30,8 +32,17 @@ class MovesDiaryActivity : AppCompatActivity(), AnkoLogger, MovesAuth {
       Snackbar.make(it, R.string.add_entry, Snackbar.LENGTH_SHORT)
         .setAction("Action", null).show()
     }
+  }
 
-    auth_button.onClick { doRequestAuthInApp() }
+  override fun onResume() {
+    super.onResume()
+    if (dbOperations.getAccessToken().isEmpty()){
+      auth_button.onClick { doRequestAuthInApp() }
+    }
+    else {
+      auth_button.visibility = View.GONE
+      auth_button.text = "You are signed in"
+    }
   }
 
   /**

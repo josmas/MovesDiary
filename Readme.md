@@ -41,9 +41,10 @@ For now, it:
           [] store API data from calls
       [] Add a progress dialog while auth is taking place
       [] Figure out the flow of Auth + token + what happens next
-        [] When App starts, only show Auth button if needed
-          [] Check DB for access_token
+        [X] When App starts, only show Auth button if needed
+          [X] Check DB for access_token
           [] Validate access_token? Can I do this with the expires_in?
+          [] Add sing out to Menu
       [] devise some way of refreshing the token when needed
     [] Auto diary
       [] find location info from Moves

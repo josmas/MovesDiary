@@ -51,4 +51,14 @@ object dbOperations: AnkoLogger {
 
     return returnCode;
   }
+
+  fun getAccessToken(): String {
+    var accessToken: String = ""
+    database.use {
+      val result = select("Credentials", "access_token").limit(1)
+      accessToken = result.parseOpt(StringParser) ?: ""
+    }
+
+    return accessToken;
+  }
 }
