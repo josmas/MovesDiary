@@ -44,8 +44,7 @@ For now, it:
         [X] When App starts, only show Auth button if needed
           [X] Check DB for access_token
           [X] Get profile with a bad token and fix error handling
-            [] and think about how to handle when a token is expired
-            [] also store the profile, as it should not change.
+            [X] also store the profile, as it should not change.
           [] Validate access_token? Can I do this with the expires_in?
           [] Add sing out to Menu
       [] devise some way of refreshing the token when needed

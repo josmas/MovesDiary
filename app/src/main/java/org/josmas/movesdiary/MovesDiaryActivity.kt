@@ -31,8 +31,8 @@ class MovesDiaryActivity : AppCompatActivity(), AnkoLogger, MovesAuth {
         .setAction("Action", null).show()
     }
 
+    signedInAs.text = signedInAs.text.toString() + " " + accountManager.accounts.first().name
     profile_button.onClick { requestProfile(this) }
-
   }
 
   override fun onResume() {
