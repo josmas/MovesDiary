@@ -19,7 +19,7 @@ data class Credentials (val access_token: String, val token_type: String, val ex
                         val refresh_token: String, val user_id: Long)
 // Profile data classes
 data class UserProfile (val userId: Long, val profile: Profile)
-data class Profile (val firstDate: String, val currentTimeZome: CurrentTimeZone, val localization: Localization,
+data class Profile (val firstDate: String, val currentTimeZone: CurrentTimeZone, val localization: Localization,
                     val caloriesAvailable: Boolean, val platform: String)
 data class CurrentTimeZone (val id: String, val offset: String)
 data class Localization (val language: String, val locale: String, val firstWeekDay: Int, val metric: Boolean)
@@ -87,12 +87,10 @@ interface MovesAuth : MovesService, AnkoLogger {
           val accessCode = body.access_token;
           info(accessCode)
           val allGood = dbOperations.insertCredentials(body)
-          info("DB Operations good if not -1? : " + allGood)//TODO (jos) deal with errors
-          // TODO (jos) the following two calls are here to test a happy path; will be removed
-          //validateToken(accessCode)
-          //requestProfile(accessCode)
+          info("DB Operations Credentials good if not -1? : " + allGood)//TODO (jos) deal with errors
+          requestProfile()
         }
-        //TODO (jos) else --> Feedback that something is wrong.
+        // TODO (jos) else --> Feedback that something is wrong.
         // TODO (jos) the Auth progress bar stops here?
       }
 
@@ -101,6 +99,50 @@ interface MovesAuth : MovesService, AnkoLogger {
         info(exception.toString())
         //TODO (jos) stop the Auth progress bar here too.
         throw UnsupportedOperationException(exception)
+      }
+    })
+  }
+
+  fun requestProfile(ctx: Context = App.instance) {
+
+    if (getAccessToken().isEmpty()) {
+      info("User is not Signed in; cannot request a Profile. Exiting this call.")
+      return
+    }
+
+    info("User seems to be signed in; don't know at this moment if access_token is valid.")
+    val getProfileCall: Call<UserProfile> = getService().getUserProfile(getAccessToken())
+
+    getProfileCall.enqueue(object: Callback<UserProfile> {
+      override fun onResponse(tokenCall: Call<UserProfile>?, response: Response<UserProfile>?) {
+        var err = false
+        if (response != null) {
+          val body: UserProfile = response.body()
+          if (body != null) {
+            info(body)
+            //TODO (jos) store profile on DB - it won't change much
+            val allGood = dbOperations.insertUserProfile(body)
+            info("DB Operations User Profile good if not -1? : " + allGood)//TODO (jos) deal with errors
+            return
+          } else {
+            if (response.errorBody() != null) {
+              error(response.message() + " : " + response.code() + " : " + response.raw())
+              err = true
+            }
+          }
+        }
+        else {
+          error("No response back from Profile call.")
+          err = true
+        }
+        if (err) ctx.toast("There's been a communication error, please try again later.")
+        // TODO (jos) the Auth progress bar stops here?
+      }
+
+      override fun onFailure(tokenCall: Call<UserProfile>?, exception: Throwable?) {
+        info(exception.toString())
+        info(exception.toString())
+        //TODO (jos) stop the Auth progress bar here too.
       }
     })
   }
@@ -136,44 +178,5 @@ interface MovesAuth : MovesService, AnkoLogger {
 }
 
 interface MovesData : MovesService, AnkoLogger {
-  fun requestProfile(ctx: Context = App.instance) {
 
-    if (getAccessToken().isEmpty()) {
-      info("User is not Signed in; cannot request a Profile. Exiting this call.")
-      return
-    }
-
-    info("User seems to be signed in; don't know at this moment if access_token is valid.")
-    val getProfileCall: Call<UserProfile> = getService().getUserProfile(getAccessToken())
-
-    getProfileCall.enqueue(object: Callback<UserProfile> {
-      override fun onResponse(tokenCall: Call<UserProfile>?, response: Response<UserProfile>?) {
-        var err = false
-        if (response != null) {
-          if (response.body() != null) {
-            info(response.body())
-            //TODO (jos) store profile on DB - it won't change much
-            return
-          } else {
-            if (response.errorBody() != null) {
-              error(response.message() + " : " + response.code() + " : " + response.raw())
-              err = true
-            }
-          }
-        }
-        else {
-          error("No response back from Profile call.")
-          err = true
-        }
-        if (err) ctx.toast("There's been a communication error, please try again later.")
-        // TODO (jos) the Auth progress bar stops here?
-      }
-
-      override fun onFailure(tokenCall: Call<UserProfile>?, exception: Throwable?) {
-        info(exception.toString())
-        info(exception.toString())
-        //TODO (jos) stop the Auth progress bar here too.
-      }
-    })
-  }
 }

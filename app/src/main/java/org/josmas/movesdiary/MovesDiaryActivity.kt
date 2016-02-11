@@ -10,13 +10,12 @@ import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_moves_diary.*
 import kotlinx.android.synthetic.main.content_moves_diary.*
 import org.jetbrains.anko.*
 
-class MovesDiaryActivity : AppCompatActivity(), AnkoLogger, MovesAuth, MovesData {
+class MovesDiaryActivity : AppCompatActivity(), AnkoLogger, MovesAuth {
 
   companion object {
     private val REQUEST_AUTHORIZE = 1
